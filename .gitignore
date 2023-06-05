@@ -1,14 +1,14 @@
 # Ignore Images folder
-/images/
+/images/*
 
 # Ignore Grids folder
-/grids/
+/grids/*
 
 # Ignore Fonts folder
-/fonts/
+/fonts/*
 
 # Ignore Data folder
-/data/
+/data/*
 
 # Ignore Data folder
 /venv/
