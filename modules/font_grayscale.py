@@ -12,6 +12,28 @@ sys.path.append(parent_folder)
 from modules.functions import generate_font_path
 #END ABSOLUTE IMPORT
 
+def grayscale_lim_values(grayscale) :
+
+    """
+    Find the minimum and maximum values in a grayscale dictionary.
+
+    Args:
+        grayscale (dict): A dictionary of character:value pairs representing grayscale values.
+
+    Returns:
+        tuple: A tuple containing the minimum and maximum values in the grayscale dictionary.
+    """
+
+    max_value = -1 * float('inf') 
+    min_value = float('inf') 
+    for val in grayscale.values() :
+
+        if val > max_value :
+            max_value = val
+        if val < min_value :
+            min_value = val
+
+    return min_value, max_value
 
 def generate_french_characters():
 
@@ -25,6 +47,30 @@ def generate_french_characters():
     return french_characters
 
 
+
+def normalize_values(min, max, grayscale) :
+    """
+    Normalizes the values in the grayscale dictionary to a specified range.
+
+    Args:
+        min_val (int): The minimum value that the normalized data should take.
+        max_val (int): The maximum value that the normalized data should take.
+        grayscale (dict): A dictionary of character:value pairs to be normalized.
+
+    Returns:
+        dict: A dictionary of characters paired with their normalized values.
+    """
+
+
+    min_value, max_value = grayscale_lim_values(grayscale)
+
+    for char in grayscale :
+        value = grayscale[char]
+        grayscale[char] =  (max - min)  * ( (min_value - value) / (min_value - max_value) ) + min
+
+    return grayscale
+
+
 def calculate_grayscale(font_name, font_size = 12):
     """
     Calculates the grayscale levels for each character of a given font.
@@ -33,7 +79,7 @@ def calculate_grayscale(font_name, font_size = 12):
         font_name (str): 'font_name.extension' 
 
     Returns:
-        str: A string containing the characters sorted by grayscale level (from darkest to lightest).
+        [(character, brightness), ... , ()]: A string containing the characters sorted by grayscale level (from darkest to lightest).
     """
 
     font_path = generate_font_path(font_name)
@@ -66,11 +112,51 @@ def calculate_grayscale(font_name, font_size = 12):
 
         image = Image.new("L", (20, 20))  # Réinitialiser l'image
 
-    # Trier les caractères par niveau de gris (du plus sombre au plus clair)
-    sorted_chars = sorted(grayscale_values, key=grayscale_values.get)
+    normalized_grayscale_values = normalize_values(0, 255, grayscale_values)
 
-    return ''.join(sorted_chars)
+    return normalized_grayscale_values
 
 
+def grayscale_distance(brightness, character, grayscale) :
+    return brightness - grayscale[character]
+
+def grayscale_character(brightness, grayscale) :
+    """
+    Finds the closest character in the grayscale dictionary based on the given pixel brightness.
+
+    Args:
+        brightness (int): The pixel brightness to pair with a character.
+        grayscale (dict): A dictionary of character:brightness value pairs.
+
+    Returns:
+        tuple: A tuple containing the closest character and the distance between the pixel brightness and the character's brightness.
+    """
+
+    char, value = min(grayscale.items(), key=lambda char: abs(grayscale_distance(brightness, char[0], grayscale)))
+
+
+    return char, grayscale_distance(brightness, char, grayscale)
+
+
+def invert_grayscale(grayscale) :
+
+    """
+    Inverts the grayscale values, making the darkest characters become the brightest.
+
+    Args:
+        grayscale (dict): A dictionary of character:brightness value pairs representing grayscale values.
+
+    Returns:
+        dict: The inverted grayscale dictionary.
+    """
+ 
+    min_value, max_value = grayscale_lim_values(grayscale)
+
+    for key in grayscale :
+        grayscale[key] = max_value - grayscale[key] + min_value
+
+    return  grayscale
+
+    
 if __name__ == "__main__":
     print(calculate_grayscale("lostgun-Regular.otf"))

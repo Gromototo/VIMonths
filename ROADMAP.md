@@ -9,3 +9,9 @@
 - [x] Implement a function to generate an image using specific characters, similar to ASCII art, based only on the most appropriate range of grayscale characters.
 
 - [x] Save the generated character grids.
+
+### Version 1.0.1
+
+- [x] Improving the character-brightness mapping is necessary due to the non-uniform distribution of characters in the grayscale.
+
+- [x] Modify grayscale for white mode

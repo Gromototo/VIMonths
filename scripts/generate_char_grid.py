@@ -8,9 +8,8 @@ import os
 parent_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(parent_folder)
 
-from modules.font_grayscale import calculate_grayscale
-from modules.functions import generate_font_path, generate_image_path
-from modules.functions import save_string_to_file, convert_to_grayscale
+from modules.font_grayscale import *
+from modules.functions import *
 #END ABSOLUTE IMPORT
 
 def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rslt = True, black = False,  font_size = 12, case_size = (15, 15)):
@@ -38,7 +37,11 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
     else :
         font_color = 0
         background_color = 255
-        grayscale = grayscale[::-1]
+        
+        #invert grayscale
+        grayscale = invert_grayscale(grayscale)
+
+
     #one caracter case size
     case_w, case_h = case_size
 
@@ -70,13 +73,12 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
             # Get the brightness value for the current pixel
             brightness = image.getpixel((x, y))
 
-            # Determine the index of the character to use based on brightness
-            char_index = int(round(brightness * (len(grayscale) - 1)/ 255 ))
-
+            # Determine the character to use based on brightness and grayscale
+            char = grayscale_character(brightness, grayscale)[0]
             # Draw the character at the position in the grid
-            draw.text((char_x, char_y), grayscale[char_index], font=font, fill=font_color)
+            draw.text((char_x, char_y), char, font=font, fill=font_color)
 
-            char_grid += grayscale[char_index]
+            char_grid += char
 
         char_grid += "\n"
 
@@ -89,4 +91,16 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
     return char_grid
 
 if __name__ == "__main__":
-    print(convert_image_to_char_grid("dog.jpeg", "lostgun-Regular.otf", show_rslt = True, save_rslt = True, black = True, font_size =  5 , case_size= (5,5)))
+    print(
+        convert_image_to_char_grid(
+        "Nous.jpeg", "lostgun-Regular.otf", 
+        show_rslt = True, 
+        save_rslt = True, 
+        black = True, 
+        font_size =  15 , 
+        case_size= (20,20))
+        )
+    
+
+
+
