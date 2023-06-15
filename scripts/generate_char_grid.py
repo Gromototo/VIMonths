@@ -10,9 +10,10 @@ sys.path.append(parent_folder)
 
 from modules.font_grayscale import *
 from modules.functions import *
+from modules.color_palette import *
 #END ABSOLUTE IMPORT
 
-def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rslt = True, black = False,  font_size = 12, case_size = (15, 15)):
+def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rslt = True, black = False,  num_colors = 0, font_size = 12, case_size = (15, 15)):
     """
     Converts a grayscale image to a character grid string.
 
@@ -23,6 +24,7 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
         show_rslt (bool) : True > opens the character made image
         save_rslt (bool) : True > saves the characters grid into grids folder
         black (bool) : True > Black Background
+        num_colors (int) : number of colors
         case_size (tuple) : (case_w, case_h) letter pixel box
 
     Returns:
@@ -30,13 +32,18 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
     """
     grayscale = calculate_grayscale(font_name, font_size)
 
+ 
     #set white on black
     if black :
         font_color = 255
         background_color = 0
     else :
         font_color = 0
-        background_color = 255
+
+        if num_colors :
+            background_color = (255, 255, 255)
+        else :   
+            background_color = 255
         
         #invert grayscale
         grayscale = invert_grayscale(grayscale)
@@ -51,8 +58,27 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
 
     grid_width, grid_height = image.size
 
+    #Create color palette
+    if num_colors :
+        
+        labels, colors = create_color_palette(image_name, num_colors)
+        colors = [tuple([int(comp) for comp in color]) for color in colors]
+        
+        if black :
+            colors[0] = (255, 255, 255)
+        else :
+            colors[0] = (0, 0, 0)
+
+        print(labels)
+        print(colors)
     # Create a blank image for drawing the character grid
-    char_image = Image.new("L", (grid_width * case_w, grid_height * case_h), color=background_color)
+    if num_colors :
+        mode = "RGB"
+    else :
+        mode = "L"
+        
+    char_image = Image.new(mode, (grid_width * case_w, grid_height * case_h), color=background_color)
+
 
     # Initialize the font
     font_path = generate_font_path(font_name)
@@ -75,6 +101,10 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
 
             # Determine the character to use based on brightness and grayscale
             char = grayscale_character(brightness, grayscale)[0]
+
+            if num_colors :
+                font_color = colors[labels[y*grid_width+x]]
+
             # Draw the character at the position in the grid
             draw.text((char_x, char_y), char, font=font, fill=font_color)
 
@@ -93,11 +123,12 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
 if __name__ == "__main__":
     print(
         convert_image_to_char_grid(
-        "Nous.jpeg", "lostgun-Regular.otf", 
+        "colors.jpg", "lostgun-Regular.otf", 
         show_rslt = True, 
         save_rslt = True, 
-        black = True, 
-        font_size =  15 , 
+        black = False, 
+        num_colors = 6,
+        font_size =  20 , 
         case_size= (20,20))
         )
     

@@ -15,3 +15,15 @@
 - [x] Improving the character-brightness mapping is necessary due to the non-uniform distribution of characters in the grayscale.
 
 - [x] Modify grayscale for white mode
+
+### Version 1.1
+
+- [x] Implement the DBScan algorithm to find predominant colors
+- [x] To enhance the text image, a color palette of n colors can be added
+
+
+
+
+### Version X.X.X
+- [] Use a different method to find neigbor points in dbscan such as R-Tree or DK-Tree
+

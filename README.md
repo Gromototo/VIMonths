@@ -30,16 +30,16 @@ To use the project, follow these steps:
 Here's an example:
 
   ```python
-      convert_image_to_char_grid(
 
+      convert_image_to_char_grid(
         "dog.jpeg", 
         "lostgun-Regular.otf", 
         show_rslt = True, 
         save_rslt = True, 
-        black = True, 
-        font_size =  10 , 
-        case_size= (15,15)
-
+        black = False, 
+        num_colors = 6,
+        font_size =  20 , 
+        case_size= (20,20)
       )
   ```
 
