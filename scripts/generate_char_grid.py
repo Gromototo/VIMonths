@@ -56,21 +56,22 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
     image_path = generate_image_path(image_name)
     image = convert_to_grayscale(image_path)
 
+    print("image size :", image.size, "nb pixels : ", image.size[0]*image.size[1])
     grid_width, grid_height = image.size
 
     #Create color palette
     if num_colors :
         
         labels, colors = create_color_palette(image_name, num_colors)
-        colors = [tuple([int(comp) for comp in color]) for color in colors]
+        
+        colors = [tuple(int(comp) for comp in color.astype(int)) for color in colors]
         
         if black :
             colors[0] = (255, 255, 255)
         else :
             colors[0] = (0, 0, 0)
 
-        print(labels)
-        print(colors)
+
     # Create a blank image for drawing the character grid
     if num_colors :
         mode = "RGB"
@@ -88,7 +89,6 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
     char_grid = ""
 
     # Draw the character grid
-    
     draw = ImageDraw.Draw(char_image)
     for y in range(grid_height):
         for x in range(grid_width):
@@ -103,8 +103,10 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
             char = grayscale_character(brightness, grayscale)[0]
 
             if num_colors :
-                font_color = colors[labels[y*grid_width+x]]
+            
+                index = y*grid_width+x
 
+                font_color = colors[labels[index]]
             # Draw the character at the position in the grid
             draw.text((char_x, char_y), char, font=font, fill=font_color)
 
@@ -121,16 +123,17 @@ def convert_image_to_char_grid(image_name, font_name, show_rslt = True, save_rsl
     return char_grid
 
 if __name__ == "__main__":
-    print(
-        convert_image_to_char_grid(
-        "colors.jpg", "lostgun-Regular.otf", 
+    
+    convert_image_to_char_grid(
+        "NousNoBG.jpg", "lostgun-Regular.otf", 
         show_rslt = True, 
         save_rslt = True, 
-        black = False, 
-        num_colors = 6,
+        black = True, 
+        num_colors = 5,
         font_size =  20 , 
-        case_size= (20,20))
-        )
+        case_size= (20,20)
+    )
+    
     
 
 

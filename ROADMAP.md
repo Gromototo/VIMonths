@@ -22,8 +22,10 @@
 - [x] To enhance the text image, a color palette of n colors can be added
 
 
+### Version 1.1.1
 
+<small style="color: green;">Huge Improvements on this version</small>
 
-### Version X.X.X
-- [] Use a different method to find neigbor points in dbscan such as R-Tree or DK-Tree
+- [x] Use a library optimised dbscan implementation
+- [x] Create a method to auto-tune dbscan parameters (eps, min_sample)
 
