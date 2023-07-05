@@ -47,7 +47,7 @@ if __name__ == "__main__":
         to_print = to_print
     )
     
-    """
+    
     # save each layer
     for layer in layers:
 
@@ -56,4 +56,4 @@ if __name__ == "__main__":
             image_name,
             black=black,
             to_print = to_print,
-        )"""
+        )
