@@ -1,11 +1,13 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from PIL import Image
-from math import sqrt
-from sklearn.cluster import DBSCAN
+from modules.DBScan import *
+from modules.functions import *
 import random
+import numpy as np
 
-#ABSOLUTE IMPORT
+import matplotlib.pyplot as plt
+
+from PIL import Image
+from sklearn.cluster import DBSCAN
+
 import sys
 import os
 
@@ -13,14 +15,19 @@ import os
 parent_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(parent_folder)
 
-from modules.functions import *
-from modules.DBScan import *
-
-#END ABSOLUTE IMPORT
+from modules import functions
 
 
-def image_to_dataset(image) :
+def image_to_dataset(image):
+    """
+    Convert the image into a dataset of pixel brightness values.
 
+    Args:
+        image (PIL.Image.Image): The input image.
+
+    Returns:
+        list: List of pixel brightness values.
+    """
     dataset = []
 
     im_w, im_h = image.size
@@ -32,38 +39,37 @@ def image_to_dataset(image) :
 
     return dataset
 
-def pixels_graph(image_name, num_colors = None):
+
+def pixels_graph(image_name, num_colors=None):
     """
     Display the RGB values of each pixel in a 3D graph.
 
     Args:
-        image_name (str): 'image_name.extension' 
-        num_colors (int) : number of colors to use in the image
+        image_name (str): 'image_name.extension'
+        num_colors (int): Number of colors to use in the image. Default is None.
+
     Returns:
         None
     """
-    
+
     # Open the image as an Image object
-    image_path = generate_image_path(image_name)
+    image_path = functions.generate_image_path(image_name)
     image = Image.open(image_path)
-    
+
     r, g, b = [], [], []
 
     # Display each point with its RGB color
-    if num_colors != None:
-
+    if num_colors is not None:
         image = image_to_dataset(image)
-        labels, colors =  create_color_palette(image_name, num_colors)
-        colors = [[component/255 for component in color] for color in colors]
+        labels, colors = create_color_palette(image_name, num_colors)
+        colors = [[component / 255 for component in color] for color in colors]
         points_color = [colors[labels[index]] for index in range(len(labels))]
 
-        for point in image :
+        for point in image:
             r.append(point[0])
             g.append(point[1])
             b.append(point[2])
-    else :
-
-
+    else:
         # Separate the R, G, and B components
         im_w, im_h = image.size
         for y in range(im_h):
@@ -74,30 +80,30 @@ def pixels_graph(image_name, num_colors = None):
                 g.append(brightness[1])
                 b.append(brightness[2])
 
-        points_color = [(r[i]/255, g[i]/255, b[i]/255) for i in range(len(r))]
+        points_color = [
+            (r[i] / 255, g[i] / 255, b[i] / 255) for i in range(len(r))
+        ]
 
     # Create a 3D graph
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
+    ax = fig.add_subplot(111, projection="3d")
 
     ax.scatter(r, g, b, c=points_color, s=1)
 
     # Configure axis labels
-    ax.set_xlabel('R')
-    ax.set_ylabel('G')
-    ax.set_zlabel('B')
+    ax.set_xlabel("R")
+    ax.set_ylabel("G")
+    ax.set_zlabel("B")
 
     # Show the graph
     plt.show()
 
     return None
 
-import numpy as np
 
 def distance(color1, color2):
     """
-    Calculates the Euclidean distance between two RGB colors.
+    Calculate the Euclidean distance between two RGB colors.
 
     Args:
         color1 (tuple): RGB color tuple (R, G, B).
@@ -105,7 +111,6 @@ def distance(color1, color2):
 
     Returns:
         float: Euclidean distance between the two colors.
-
     """
     color1 = np.array(color1)
     color2 = np.array(color2)
@@ -120,11 +125,9 @@ def distance(color1, color2):
     return distance
 
 
-import random
-
 def calculate_color_difference(labels, original_image, assigned_colors, sample_rate=0.1):
     """
-    Calculates the average color difference between the assigned colors and the original colors in the image based on labels.
+    Calculate the average color difference between the assigned colors and the original colors in the image based on labels.
 
     Args:
         labels (list): List of labels assigned to each pixel.
@@ -134,7 +137,6 @@ def calculate_color_difference(labels, original_image, assigned_colors, sample_r
 
     Returns:
         float: Average color difference.
-
     """
     original_colors = original_image.getdata()  # Get the RGB colors of the original image
 
@@ -163,16 +165,31 @@ def calculate_color_difference(labels, original_image, assigned_colors, sample_r
 
     return average_difference
 
+
 def find_optimal_params(dataset, original_image, num_colors, iterations):
+    """
+    Find the optimal parameters for DBSCAN clustering.
+
+    Args:
+        dataset (list): List of pixel brightness values.
+        original_image (PIL.Image.Image): The original image.
+        num_colors (int): Number of colors to use in the image.
+        iterations (int): Number of iterations to perform.
+
+    Returns:
+        tuple: Tuple containing the best epsilon value, best min_samples value, best labels, and best colors.
+    """
     best_eps = None
     best_min_samples = None
-    best_difference = float('inf')
+    best_difference = float("inf")
     best_labels = None
     best_colors = None
 
     for _ in range(iterations):
-        eps = random.uniform(0.1, 5.0)  # Randomly choose a value for eps within a range
-        min_samples = random.randint(2, 10)  # Randomly choose a value for min_samples within a range
+        # Randomly choose a value for eps within a range
+        eps = random.uniform(0.1, 5.0)
+        # Randomly choose a value for min_samples within a range
+        min_samples = random.randint(2, 10)
 
         dbscan = DBSCAN(eps=eps, min_samples=min_samples)
         labels = dbscan.fit_predict(dataset)
@@ -192,19 +209,27 @@ def find_optimal_params(dataset, original_image, num_colors, iterations):
     return best_eps, best_min_samples, best_labels, best_colors
 
 
+def create_color_palette(image_name, num_colors):
+    """
+    Create a color palette for the image using DBSCAN clustering.
 
-def create_color_palette(image_name, num_colors) : 
+    Args:
+        image_name (str): 'image_name.extension'
+        num_colors (int): Number of colors to use in the image.
 
-
+    Returns:
+        tuple: Tuple containing the labels and colors for each cluster.
+    """
     # Open the image as an Image object
-    image_path = generate_image_path(image_name)
+    image_path = functions.generate_image_path(image_name)
     image = Image.open(image_path)
-    
+
     dataset = image_to_dataset(image)
 
-
-    # Création d'un objet DBSCAN avec les paramètres appropriés
-    best_eps, best_min_samples, labels, colors = find_optimal_params(dataset, image, num_colors, 10)
+    # Create an object DBSCAN with appropriate parameters
+    best_eps, best_min_samples, labels, colors = find_optimal_params(
+        dataset, image, num_colors, 10
+    )
 
     return labels, colors
 
@@ -212,4 +237,3 @@ def create_color_palette(image_name, num_colors) :
 if __name__ == "__main__":
     pixels_graph("Nous.jpg", 4)
     pixels_graph("Nous.jpg")
-    

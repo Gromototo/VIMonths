@@ -1,2 +1,4 @@
 # Ignore Data folder
 /venv/
+/results/
+.pylintrc

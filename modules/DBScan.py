@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.cluster import KMeans
 
+
 def find_cluster_centroids(dataset, labels):
     """
     Find the centroids of each cluster in the dataset.
@@ -15,7 +16,9 @@ def find_cluster_centroids(dataset, labels):
     dataset = np.array(dataset)  # Convert the dataset to a NumPy array
 
     unique_labels = set(labels)
-    num_clusters = len(unique_labels) - 1 if -1 in labels else len(unique_labels)
+    num_clusters = (
+        len(unique_labels) - 1 if -1 in labels else len(unique_labels)
+    )
 
     centroids = []
 
@@ -26,8 +29,9 @@ def find_cluster_centroids(dataset, labels):
         cluster_points = dataset[labels == cluster_label]
         centroid = np.mean(cluster_points, axis=0)
         centroids.append(centroid)
-    
+
     return centroids
+
 
 def condense_clusters(labels, colors, num_colors):
     """
@@ -65,6 +69,3 @@ def condense_clusters(labels, colors, num_colors):
     labels = [new_labels[label] for label in labels]
 
     return labels, new_colors
-
-
-
