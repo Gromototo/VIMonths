@@ -49,7 +49,7 @@ To use the project, follow these steps:
 </div>
 <br>
 
-&nbsp; 5. Intall depedencies by runnig `pip install -r requirements.txt` in the terminal.
+&nbsp; 5. Install depedencies by running `pip install -r requirements.txt` in the terminal.
 
 &nbsp; 6. Run the file `main.py` file.
 
